@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Haunted Archetype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Outfit:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: a fanned tarot deck presides over one column. Results arrive as a tarot card, creator reveal follows behind a ticker band */
+:root{
+  --night:#0b0710;
+  --plum:#1c0f2e;
+  --violet:#7b2cff;
+  --lilac:#cdb8ff;
+  --pumpkin:#ff7a1a;
+  --cream:#fff4e8;
+  --dim:#a99bc4;
+  --display:"Shrikhand","Cooper Black",Georgia,serif;
+  --oracle:"Cormorant Garamond",Georgia,serif;
+  --body:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace;
+  --accent:var(--lilac);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{background:var(--night);color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(50% 35% at 15% 10%, rgba(123,44,255,.38), transparent 70%),
+    radial-gradient(45% 30% at 95% 35%, rgba(255,122,26,.18), transparent 70%),
+    radial-gradient(60% 40% at 50% 105%, rgba(123,44,255,.3), transparent 70%),
+    var(--night)}
+.spark{position:absolute;font-size:12px;line-height:1;animation:twinkle ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(.7) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(25deg)}}
+
+.ticker{position:relative;z-index:2;overflow:hidden;background:var(--pumpkin);color:var(--night);
+  font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding-block:8px;white-space:nowrap}
+.ticker.alt{background:var(--lilac);transform:rotate(-1.2deg);margin-inline:-16px;margin-top:56px}
+.ticker-track{display:inline-flex;gap:28px;padding-left:28px;animation:slide 26s linear infinite}
+.ticker.alt .ticker-track{animation-direction:reverse}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+.wrap{position:relative;z-index:1;max-width:620px;margin:0 auto;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:22px 56px}
+.scene{animation:pop .5s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes pop{from{opacity:.001;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+/* Card fan */
+.fan{position:relative;width:min(84vw,320px);height:200px;margin:4px auto 30px}
+.fcard{position:absolute;left:50%;bottom:0;width:92px;height:140px;margin-left:-46px;border-radius:12px;
+  background:linear-gradient(170deg,#2a1545,#0e0717);border:2.5px solid var(--pumpkin);box-shadow:3px 3px 0 var(--violet);
+  display:grid;place-items:center;align-content:center;gap:6px;transform-origin:50% 175%;
+  transform:rotate(calc((var(--i) - 2.5) * 15deg)) translateY(-6px);animation:fanin .9s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--i) * 70ms)}
+.fcard svg{width:46px;height:46px}
+.fcard .fnum{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--pumpkin);letter-spacing:.12em}
+.fcard.face{background:var(--lilac);border-color:var(--night);transform:translateY(-18px);z-index:2;animation:hover 3s ease-in-out infinite;box-shadow:5px 5px 0 var(--pumpkin)}
+.fcard .q{font-family:var(--display);font-size:64px;line-height:1;color:var(--night)}
+@keyframes fanin{from{transform:rotate(0) translateY(20px);opacity:.001}}
+@keyframes hover{0%,100%{transform:translateY(-18px)}50%{transform:translateY(-26px)}}
+
+/* Landing */
+.hero{display:grid;gap:18px;justify-items:center;text-align:center;padding-block:26px 8px}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--lilac)}
+h1{font-family:var(--display);font-weight:400;margin:0;font-size:clamp(46px,12.5vw,86px);line-height:.95;letter-spacing:-.01em;color:var(--cream);text-wrap:balance;
+  text-shadow:4px 4px 0 var(--violet)}
+h1 span{color:var(--pumpkin)}
+.sub{font-family:var(--oracle);font-style:italic;font-size:clamp(22px,5.4vw,28px);line-height:1.2;color:var(--lilac);margin:0;max-width:24ch;text-wrap:balance}
+.lede{color:var(--dim);font-size:16.5px;max-width:44ch;margin:0}
+.stickers{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.sticker{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 11px;border-radius:999px;color:var(--night)}
+.sticker:nth-child(1){background:var(--lilac);transform:rotate(-3deg)}
+.sticker:nth-child(2){background:var(--pumpkin);transform:rotate(2deg)}
+.sticker:nth-child(3){background:var(--cream);transform:rotate(-1.5deg)}
+
+.btn{appearance:none;border:0;cursor:pointer;font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-weight:700;font-size:17px;padding:16px 28px;border-radius:999px;text-decoration:none;color:var(--night);
+  transition:transform .15s ease, box-shadow .15s ease}
+.btn:focus-visible,.opt:focus-visible,.ghost:focus-visible{outline:3px solid var(--lilac);outline-offset:3px}
+.btn-pumpkin{background:var(--pumpkin);box-shadow:5px 5px 0 var(--violet)}
+.btn-pumpkin:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--violet)}
+.btn-pumpkin:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--violet)}
+.btn-lilac{background:var(--lilac);box-shadow:5px 5px 0 var(--pumpkin)}
+.btn-lilac:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--pumpkin)}
+.btn-ghost{background:transparent;color:var(--cream);border:2px solid var(--lilac)}
+.btn-ghost:hover{background:rgba(205,184,255,.12)}
+
+.coven{margin-top:40px}
+.coven h2,.label{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--pumpkin);margin:0 0 14px}
+.deck{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mini{display:grid;justify-items:center;align-content:start;gap:6px;text-align:center;padding:12px 6px;border-radius:12px;
+  background:var(--plum);border:2px solid rgba(205,184,255,.18);font-size:12.5px;line-height:1.2;color:var(--dim);transition:transform .2s}
+.mini:nth-child(odd){transform:rotate(-1.5deg)}
+.mini:nth-child(even){transform:rotate(1.5deg)}
+.mini:hover{transform:rotate(0) translateY(-3px)}
+.mini .num{font-family:var(--mono);font-size:10px;color:var(--pumpkin);letter-spacing:.1em}
+.mini svg{width:38px;height:38px}
+.mini.is-you{border-color:var(--pumpkin);background:#2a1545;color:var(--cream)}
+
+/* Quiz */
+.quiz-head{display:grid;justify-items:center;gap:10px;padding-top:20px}
+.eye-note{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.eye-note b{color:var(--pumpkin)}
+.moons{display:flex;justify-content:center;gap:9px;margin-top:4px}
+.moon{width:14px;height:14px;border-radius:50%;border:2px solid var(--lilac);transition:background .3s, transform .3s}
+.moon.done{background:var(--lilac)}
+.moon.now{background:var(--pumpkin);border-color:var(--pumpkin);transform:scale(1.25)}
+.question{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,40px);line-height:1.1;margin:26px 0 22px;text-align:center;text-wrap:balance}
+.opts{display:grid;gap:12px}
+.opt{appearance:none;font:inherit;text-align:left;cursor:pointer;color:var(--night);
+  display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:center;
+  padding:15px 16px;border-radius:16px;background:var(--lilac);border:2px solid var(--night);
+  box-shadow:4px 4px 0 var(--violet);font-weight:600;font-size:16px;line-height:1.35;
+  transition:transform .12s, box-shadow .12s, background .15s}
+.opt:nth-child(2){background:#dccbff}
+.opt:nth-child(3){background:#c2a9ff}
+.opt:nth-child(4){background:#d4c0ff}
+.opt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--violet)}
+.opt.picked{background:var(--pumpkin);box-shadow:4px 4px 0 var(--cream)}
+.opt .letter{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--night);color:var(--lilac);font-family:var(--mono);font-weight:700;font-size:14px}
+.opt.picked .letter{color:var(--pumpkin)}
+.opt span:last-child{min-width:0}
+.quiz-foot{display:flex;justify-content:space-between;margin-top:22px}
+.ghost{appearance:none;background:none;border:0;color:var(--dim);font:inherit;font-size:14px;cursor:pointer;padding:8px 0}
+.ghost:hover{color:var(--cream)}
+.ghost[disabled]{opacity:.3;cursor:default}
+
+/* Result: tarot card */
+.result{display:grid;gap:24px;padding-top:18px}
+.reveal-line{text-align:center;font-family:var(--oracle);font-style:italic;font-size:22px;color:var(--lilac);margin:0}
+.tarot{position:relative;margin:0 auto;width:min(90%,340px);aspect-ratio:2/3.15;max-width:100%;
+  background:radial-gradient(80% 50% at 50% 38%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%), linear-gradient(170deg,#24123d,#0e0717);
+  border:3px solid var(--pumpkin);border-radius:22px;padding:14px;transform:rotate(-2deg);
+  box-shadow:8px 8px 0 var(--violet),0 30px 70px -20px rgba(123,44,255,.8);animation:deal .8s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes deal{from{transform:rotate(-14deg) translateY(30px) scale(.85);opacity:.001}to{transform:rotate(-2deg);opacity:1}}
+.tarot-inner{height:100%;border:1.5px solid rgba(255,122,26,.55);border-radius:14px;display:grid;grid-template-rows:auto 1fr auto auto;justify-items:center;text-align:center;padding:16px 14px 18px;gap:8px}
+.tarot .num{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.25em;color:var(--pumpkin)}
+.tarot .halo{align-self:center;width:150px;height:150px;max-width:100%;border-radius:50%;display:grid;place-items:center;color:var(--accent);
+  background:radial-gradient(circle, rgba(123,44,255,.55), rgba(123,44,255,0) 70%)}
+.tarot .halo svg{width:118px;height:118px;filter:drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 70%, transparent));animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.tarot h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,8vw,36px);line-height:1;margin:0;color:var(--cream);text-wrap:balance}
+.tarot h2 small{display:block;font-family:var(--oracle);font-style:italic;font-size:.6em;color:var(--lilac);margin-bottom:2px}
+.tarot .tagline{font-family:var(--oracle);font-style:italic;font-size:18px;line-height:1.2;color:var(--pumpkin);margin:0;max-width:24ch}
+.tarot .corner{position:absolute;font-size:14px;color:var(--pumpkin)}
+.reading{display:grid;gap:18px}
+.reading > p{margin:0;font-size:17px;max-width:60ch}
+.panel{background:var(--plum);border:2px solid rgba(205,184,255,.2);border-radius:18px;padding:16px;display:grid;gap:10px}
+.panel.hot{background:var(--lilac);color:var(--night);border-color:var(--night);box-shadow:5px 5px 0 var(--pumpkin)}
+.panel.hot .label{color:var(--violet)}
+.panel p{margin:0;font-size:16.5px}
+.strengths{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.strengths li{background:var(--pumpkin);color:var(--night);font-weight:700;border-radius:999px;padding:6px 13px;font-size:14px}
+.strengths li:nth-child(2){background:var(--lilac)}
+.strengths li:nth-child(3){background:var(--cream)}
+.actions{display:flex;flex-wrap:wrap;gap:14px}
+.toast{font-family:var(--mono);font-size:12px;color:var(--pumpkin);min-height:18px}
+.copybox{width:100%;min-height:100px;background:var(--plum);color:var(--cream);border:2px solid var(--lilac);border-radius:12px;padding:12px;font:inherit;font-size:14px}
+
+/* Creator */
+.creator{margin-top:40px;display:grid;gap:16px}
+.creator h2{font-family:var(--display);font-weight:400;font-size:clamp(40px,10.5vw,62px);line-height:.98;margin:0;color:var(--pumpkin);text-shadow:4px 4px 0 var(--violet);text-wrap:balance}
+.creator h2 span{color:var(--cream)}
+.byline{display:flex;align-items:center;gap:14px}
+.avatar{width:56px;height:56px;border-radius:50%;flex:none;background:var(--lilac);display:grid;place-items:center;border:2px solid var(--pumpkin)}
+.avatar .mono{font-family:var(--display);font-size:28px;color:var(--night);line-height:1}
+.byline div{display:grid;line-height:1.3}
+.byline b{font-size:18px}
+.byline span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--lilac)}
+.creator p{margin:0;color:var(--dim);font-size:17px;max-width:56ch}
+.creator p strong{color:var(--cream)}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+.fine{margin-top:44px;padding-top:18px;border-top:1px dashed rgba(205,184,255,.25);font-size:12.5px;color:var(--dim);display:grid;gap:6px}
+.fine p{margin:0;max-width:62ch}
+.fine a{color:var(--lilac)}
+
+
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.music{
+  appearance:none;cursor:pointer;font:inherit;display:inline-flex;align-items:center;gap:10px;
+  padding:6px 12px 6px 10px;border-radius:999px;border:1.5px solid rgba(205,184,255,.4);
+  background:transparent;color:var(--lilac);font-family:var(--body);font-weight:600;font-size:12.5px;letter-spacing:0;text-transform:none}
+.music.on{background:var(--lilac);color:var(--night);border-color:var(--lilac)}
+.music:focus-visible{outline:3px solid var(--cream);outline-offset:3px}
+.bars{display:inline-flex;align-items:flex-end;gap:2px;height:12px}
+.bars i{display:block;width:3px;height:5px;background:currentColor;border-radius:2px}
+.music.on .bars i{animation:eq 1.6s ease-in-out infinite}
+.music.on .bars i:nth-child(2){animation-delay:-.3s}
+.music.on .bars i:nth-child(3){animation-delay:-.55s}
+.music.on .bars i:nth-child(4){animation-delay:-.15s}
+@keyframes eq{0%,100%{height:3px}50%{height:12px}}
+.sound-note{font-size:13px;color:var(--dim);margin:0}
+
+@media (max-width:420px){
+  .deck{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+[hidden]{display:none!important}
+body{margin:0}
+</style>
+</head>
+<body>
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="tickerTop"></div></div>
+
+<main class="wrap">
+  <div class="topline"><span>The Haunted Archetype</span><button class="music" id="musicBtn" type="button" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="mlabel">Ambience off</span></button></div>
+
+  <!-- LANDING -->
+  <section id="landing" class="scene">
+    <div class="hero">
+      <div class="fan" id="heroFan" aria-hidden="true"></div>
+      <div class="kicker">✦ A Halloween reading ✦</div>
+      <h1>What's your <span>haunted archetype?</span></h1>
+      <p class="sub">Six spirits are waiting. One of them already knows your name.</p>
+      <p class="lede">Eight quick questions. Answer on instinct and the cards will reveal who you are this Halloween.</p>
+      <div class="stickers">
+        <span class="sticker">8 questions</span>
+        <span class="sticker">2 minutes</span>
+        <span class="sticker">Zero data saved</span>
+      </div>
+      <button class="btn btn-pumpkin" id="startBtn" type="button">Start the reading ✦</button>
+    </div>
+    <div class="coven">
+      <h2>The deck</h2>
+      <div class="deck" id="deckLanding"></div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" hidden>
+    <div class="quiz-head">
+            <div class="eye-note">Question <b id="qNum">1</b> of 8 · <span id="qHint">trust your gut</span></div>
+      <div class="moons" id="moons"></div>
+    </div>
+    <div id="qBody" aria-live="polite"></div>
+    <div class="quiz-foot">
+      <button class="ghost" id="backBtn" type="button">← Back</button>
+      <button class="ghost" id="restartBtn" type="button">Start over</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" hidden>
+    <div class="result scene" id="resultBody"></div>
+
+    <div class="ticker alt" aria-hidden="true"><div class="ticker-track" id="tickerMid"></div></div>
+
+    <section class="creator" aria-labelledby="creatorHead">
+      <h2 id="creatorHead">Plot twist: <span>I built this.</span></h2>
+      <div class="byline">
+        <div class="avatar" aria-hidden="true" id="avatarEye"></div>
+        <div><b>Olu Ladipo</b><span>AI · UX research · interactive design</span></div>
+      </div>
+      <p>I'm a customer service representative at UnitedHealth Group who builds interactive experiences on the side, with a focus on <strong>AI, UX research,</strong> and how people actually use technology.</p>
+      <p>I wrote the concept, questions, and scoring for this quiz, then used AI tools to prototype and build it.</p>
+      <p>If you work in AI, product, or design, I'd love to connect. I'm open to collaborations and new opportunities.</p>
+      <div class="cta-row">
+        <a class="btn btn-pumpkin" id="linkedinBtn" href="#" target="_blank" rel="noopener">Connect on LinkedIn</a>
+        <a class="btn btn-ghost" href="https://oluladportfolio.netlify.app/" target="_blank" rel="noopener">Explore my portfolio</a>
+      </div>
+    </section>
+  </section>
+
+  <footer class="fine">
+    <p>A personal project by Olu Ladipo. See more of my work at <a href="https://oluladportfolio.netlify.app/" target="_blank" rel="noopener">oluladportfolio.netlify.app</a>. Not affiliated with or endorsed by UnitedHealth Group.</p>
+    <p>These archetypes are playful fiction, not a psychological assessment. No answers, names, or personal data are stored or sent anywhere.</p>
+  </footer>
+</main>
+
+<script>
+const LINKEDIN_URL = "https://www.linkedin.com/in/oluladipoinsights";
+
+const ARCH = {
+  S:{name:"Haunted Strategist", num:"I", color:"#cdb8ff",
+     tagline:"Three moves ahead and already bored.",
+     desc:"You walked into the haunted house, clocked every exit, and had a theory about the ghost by the second hallway. People call you calm. You call it having a plan for when the plan fails. When the room gets chaotic, you are the one quietly redrawing the map.",
+     strengths:["Pattern mapping","Calm in chaos","Long-game thinking"],
+     ritual:"Your prompts have section headers, and you keep a saved library of the ones that work."},
+  W:{name:"Chaos Witch", num:"II", color:"#ff9a4d",
+     tagline:"Didn't read the spell. Cast it anyway.",
+     desc:"Instructions are a suggestion and the cauldron is always on. You try the weird thing first and ask questions after it works, which it usually does. Half your best ideas started as a joke, and the room gets louder and better when you show up.",
+     strengths:["Fearless experimenting","Fast improvising","Contagious energy"],
+     ritual:"You ask the AI for something absurd just to see what happens, and somehow it becomes the real project."},
+  P:{name:"Phantom Creative", num:"III", color:"#e6b3ff",
+     tagline:"Seen rarely. Remembered always.",
+     desc:"You do your best work at hours when nobody is watching, and then you appear with something finished and strange and beautiful. You see the version of a thing that hasn't been made yet. Your ideas drift a little outside the lines, which is exactly why people remember them.",
+     strengths:["Original vision","Deep focus","Unexpected connections"],
+     ritual:"You use AI like a sketchbook: twelve wild drafts, keep one line, rebuild it in your own voice."},
+  F:{name:"Final Girl", num:"IV", color:"#ffb37a",
+     tagline:"Still standing when the credits roll.",
+     desc:"Things go wrong around you and you simply keep going. You find the flashlight, the exit, and the one tool that still works. People feel safer when you are in the room because you have a way of turning a disaster into a story you survived and can laugh about later.",
+     strengths:["Resilience","Resourcefulness","Steady under pressure"],
+     ritual:"When the AI gives you a wrong answer, you don't give up. You rephrase, retry, and win on the third attempt."},
+  O:{name:"Midnight Oracle", num:"V", color:"#d9c8ff",
+     tagline:"Already knew. Waited for you to catch up.",
+     desc:"You notice the thing nobody else noticed: the tone shift in the meeting, the trend three weeks early, the detail that changes everything. Your gut has a track record. You ask the question that makes the room go quiet, then everyone realizes it was the right one.",
+     strengths:["Intuition","Reading people","Spotting hidden patterns"],
+     ritual:"You ask the AI why it gave that answer, and you can tell when it is bluffing."},
+  M:{name:"Mad Scientist", num:"VI", color:"#a875ff",
+     tagline:"It's alive. Mostly. Give it a minute.",
+     desc:"You can't leave anything alone. If it has a setting, you've changed it; if it has parts, you've taken it apart. Your workspace looks like an experiment in progress because it is one. You'd rather build a strange working prototype tonight than wait for a perfect plan next quarter.",
+     strengths:["Inventiveness","Hands-on building","Endless curiosity"],
+     ritual:"You have four AI tools chained together and you are halfway through wiring up a fifth."}
+};
+const ORDER = ["S","W","P","F","O","M"];
+const TIEBREAK = ["F","M","P","W","O","S"];
+
+// Each option: primary archetype gets 2 points, secondary gets 1.
+const QUESTIONS = [
+  {q:"It's 11:58 on Halloween night. Where are you?", hint:"trust your gut", o:[
+    ["Running the group chat, with a backup plan for the backup plan","S","F"],
+    ["Hosting a séance nobody asked for","W","O"],
+    ["In a quiet room, finishing something no one has seen yet","P","O"],
+    ["In the garage, building a fog machine out of spare parts","M","W"]]},
+  {q:"The lights cut out. What's your first move?", hint:"no wrong answers", o:[
+    ["Find the breaker. The flashlight is already in your pocket.","F","S"],
+    ["Count the exits and watch who panics first","S","F"],
+    ["Light every candle in the house and call it ambiance","W","P"],
+    ["Notice the outage hit every house on the street but yours","O","M"]]},
+  {q:"Costume, zero planning time. What happens?", hint:"be honest", o:[
+    ["You sew something incredible at 2am from three thrifted coats","P","M"],
+    ["Whatever's in the bin, plus glitter, plus confidence","W","F"],
+    ["A deep cut that only one person gets, and they love it","O","P"],
+    ["A lab coat. You already own a lab coat.","M","S"]]},
+  {q:"A shiny new tool lands at work. You:", hint:"first instinct", o:[
+    ["Read the docs and map exactly where it fits","S","M"],
+    ["Break it on purpose to see what it can really do","M","W"],
+    ["Use it for something it was never designed for","P","W"],
+    ["Wait a week and watch how people actually use it","O","S"]]},
+  {q:"Pick your role in the horror movie.", hint:"halfway there", o:[
+    ["The one who makes it to the end. Obviously.","F","S"],
+    ["The one who reads the cursed book out loud","W","M"],
+    ["The one who figured it out in act one and nobody listened","O","F"],
+    ["The one who built the creature in the first place","M","P"]]},
+  {q:"The deadline is tomorrow and the plan just fell apart.", hint:"deep breath", o:[
+    ["Rebuild the plan in twenty minutes, calmly","S","F"],
+    ["Toss the plan and improvise something better","W","P"],
+    ["Push through. You've survived worse than this.","F","M"],
+    ["Go with the gut feeling you had last week","O","P"]]},
+  {q:"Choose a haunted object to take home.", hint:"almost there", o:[
+    ["A chessboard that moves pieces on its own","S","O"],
+    ["A mirror that shows a different version of you","P","O"],
+    ["A lantern that only lights the way out","F","W"],
+    ["A jar labeled DO NOT OPEN, which you have opened","M","W"]]},
+  {q:"What do people usually come to you for?", hint:"last one", o:[
+    ["A strategy","S","M"],
+    ["Courage","F","W"],
+    ["An idea nobody else would have","P","M"],
+    ["The truth they already suspected","O","P"]]}
+];
+
+const SIGILS = {
+  S:`<rect x="22" y="22" width="76" height="76" rx="2"/><path d="M47.3 22v76M72.6 22v76M22 47.3h76M22 72.6h76"/><circle cx="60" cy="60" r="7" fill="currentColor"/><path d="M8 60h10M102 60h10M60 8v10M60 102v10"/>`,
+  W:`<path d="M60 12 L70 46 L106 46 L77 67 L88 102 L60 81 L32 102 L43 67 L14 46 L50 46 Z"/><path d="M60 52c6 0 8 6 4 9-5 3-11-1-9-7 2-7 13-8 17-1"/><circle cx="20" cy="22" r="2.5" fill="currentColor"/><circle cx="102" cy="18" r="1.8" fill="currentColor"/><circle cx="104" cy="96" r="2.5" fill="currentColor"/>`,
+  P:`<path d="M24 100V58a36 36 0 0 1 72 0v42"/><path d="M36 100V62a24 24 0 0 1 48 0v38"/><path d="M48 100V66a12 12 0 0 1 24 0v34"/><path d="M24 100c6-6 10 6 16 0s10 6 16 0 10 6 16 0 10 6 16 0 8 6 8 0"/><circle cx="60" cy="18" r="3" fill="currentColor"/>`,
+  F:`<circle cx="60" cy="28" r="12"/><path d="M60 40 22 106h76z"/><path d="M60 52v40M44 80h32" opacity=".7"/><path d="M60 6v6M40 14l4 4M80 14l-4 4"/>`,
+  O:`<path d="M10 60c14-22 32-32 50-32s36 10 50 32c-14 22-32 32-50 32S24 82 10 60z"/><circle cx="60" cy="60" r="17"/><path d="M66 46a15 15 0 1 0 0 28 18 18 0 0 1 0-28z" fill="currentColor"/><path d="M60 8v10M60 102v10"/>`,
+  M:`<path d="M48 14h24M52 14v30L26 96a8 8 0 0 0 7 12h54a8 8 0 0 0 7-12L68 44V14"/><path d="M36 78h48" opacity=".7"/><path d="M64 60 54 76h12l-8 18" stroke-width="3"/><circle cx="46" cy="90" r="3" fill="currentColor"/><circle cx="74" cy="86" r="2" fill="currentColor"/>`
+};
+const sigil = k => `<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SIGILS[k]}</svg>`;
+
+const $ = id => document.getElementById(id);
+let answers = [], step = 0, advancing = false;
+
+function show(id){
+  ["landing","quiz","result"].forEach(s => $(s).hidden = s !== id);
+  window.scrollTo(0,0);
+}
+
+function renderDeck(el, you){
+  el.innerHTML = ORDER.map(k => `
+    <div class="mini${k===you?" is-you":""}">
+      <span class="num">${ARCH[k].num}</span>
+      <span style="color:${ARCH[k].color}">${sigil(k)}</span>
+      <span>The ${ARCH[k].name}</span>
+    </div>`).join("");
+}
+
+function renderQuestion(){
+  const Q = QUESTIONS[step];
+  $("qNum").textContent = step + 1;
+  $("qHint").textContent = Q.hint;
+  $("moons").innerHTML = QUESTIONS.map((_,i)=>`<span class="moon ${i<step?"done":i===step?"now":""}"></span>`).join("");
+  const L = ["A","B","C","D"];
+  $("qBody").innerHTML = `
+    <div class="scene">
+      <h2 class="question" id="qText">${Q.q}</h2>
+      <div class="opts" role="group" aria-labelledby="qText">
+        ${Q.o.map((o,i)=>`<button type="button" id="opt-${step}-${i}" class="opt${answers[step]===i?" picked":""}" data-i="${i}">
+          <span class="letter" aria-hidden="true">${L[i]}</span><span>${o[0]}</span></button>`).join("")}
+      </div>
+    </div>`;
+  $("backBtn").disabled = step === 0;
+  $("qBody").querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => pick(+b.dataset.i, b)));
+}
+
+function pick(i, btn){
+  if (advancing) return;
+  advancing = true;
+  answers[step] = i;
+  $("qBody").querySelectorAll(".opt").forEach(b => b.classList.remove("picked"));
+  btn.classList.add("picked");
+  setTimeout(() => {
+    advancing = false;
+    if (step < QUESTIONS.length - 1){ step++; renderQuestion(); }
+    else finish();
+  }, 320);
+}
+
+// Deterministic scoring: points first, then most primary picks, then a fixed tiebreak order.
+function score(ans){
+  const pts = {}, prim = {};
+  ORDER.forEach(k => { pts[k] = 0; prim[k] = 0; });
+  ans.forEach((ai, qi) => {
+    const [, p, s] = QUESTIONS[qi].o[ai];
+    pts[p] += 2; prim[p] += 1; pts[s] += 1;
+  });
+  const winner = [...ORDER].sort((a,b) =>
+    (pts[b]-pts[a]) || (prim[b]-prim[a]) || (TIEBREAK.indexOf(a)-TIEBREAK.indexOf(b)))[0];
+  return {winner, pts};
+}
+
+function finish(){
+  const {winner} = score(answers);
+  const A = ARCH[winner];
+  document.documentElement.style.setProperty("--accent", A.color);
+  $("resultBody").innerHTML = `
+    <p class="reveal-line">The cards have spoken. You are...</p>
+    <div class="tarot" id="shareCard">
+      <span class="corner" style="top:20px;left:22px">✦</span><span class="corner" style="top:20px;right:22px">✦</span>
+      <span class="corner" style="bottom:20px;left:22px">✦</span><span class="corner" style="bottom:20px;right:22px">✦</span>
+      <div class="tarot-inner">
+        <div class="num">${A.num}</div>
+        <div class="halo">${sigil(winner)}</div>
+        <h2><small>The</small>${A.name}</h2>
+        <p class="tagline">${A.tagline}</p>
+      </div>
+    </div>
+    <div class="reading">
+      <p>${A.desc}</p>
+      <div class="panel">
+        <h3 class="label">Signature strengths</h3>
+        <ul class="strengths">${A.strengths.map(s=>`<li>${s}</li>`).join("")}</ul>
+      </div>
+      <div class="panel hot">
+        <h3 class="label">Your AI ritual</h3>
+        <p>${A.ritual}</p>
+      </div>
+      <div>
+        <h3 class="label">The full deck</h3>
+        <div class="deck" id="deckResult"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-pumpkin" id="copyBtn" type="button">Copy my result</button>
+        <button class="btn btn-lilac" id="retakeBtn" type="button">Retake the quiz</button>
+      </div>
+      <div class="toast" id="toast" role="status"></div>
+    </div>`;
+  renderDeck($("deckResult"), winner);
+  $("copyBtn").addEventListener("click", () => copyResult(A));
+  $("retakeBtn").addEventListener("click", restart);
+  show("result");
+}
+
+function copyResult(A){
+  const text = `🔮 I got The ${A.name} (card ${A.num}) on The Haunted Archetype quiz.\n"${A.tagline}"\nStrengths: ${A.strengths.join(", ")}.\nWhich one are you?`;
+  const done = () => { $("toast").textContent = "Copied. Paste it in the chat and tag a coworker."; };
+  const fallback = () => {
+    let box = $("copyFallback");
+    if (!box){
+      box = document.createElement("textarea");
+      box.id = "copyFallback"; box.className = "copybox"; box.readOnly = true;
+      $("toast").after(box);
+    }
+    box.value = text; box.focus(); box.select();
+    $("toast").textContent = "Your result is selected below. Copy it from there.";
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  } catch(e){ fallback(); }
+}
+
+function restart(){
+  answers = []; step = 0;
+  document.documentElement.style.setProperty("--accent", "#cdb8ff");
+  renderQuestion(); show("quiz");
+}
+
+// ---------- Soft Halloween ambience (generated live, off until the viewer turns it on) ----------
+const Music = (() => {
+  let ctx = null, master = null, echo = null, noiseBuf = null, playing = false, timer = null, next = 0, chordIdx = 0;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const CHORDS = [[45,57,60,64,67],[41,53,57,60,64],[43,55,59,62,67],[40,52,55,59,64]]; // Am7 Fmaj7 G Em7
+  const BELLS = [69,72,74,76,79,81,84];
+  const CHORD_LEN = 6;
+
+  function init(){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    const d = ctx.createDelay(2); d.delayTime.value = 0.62;
+    const fb = ctx.createGain(); fb.gain.value = 0.45;
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2200;
+    d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(master);
+    echo = d;
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+    const c = noiseBuf.getChannelData(0); let last = 0;
+    for (let i = 0; i < c.length; i++){ last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; c[i] = last * 3.5; }
+    return true;
+  }
+  function wind(){
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf; s.loop = true;
+    f.type = "bandpass"; f.frequency.value = 500; f.Q.value = 0.7;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.frequency.value = 0.07; lg.gain.value = 300; lfo.connect(lg); lg.connect(f.frequency);
+    g.gain.value = 0.05;
+    s.connect(f); f.connect(g); g.connect(master); s.start(); lfo.start();
+  }
+  function pad(t, notes){
+    notes.forEach((m, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+      o.type = i === 0 ? "sine" : "triangle"; o.frequency.value = mtof(m); o.detune.value = (Math.random() - .5) * 8;
+      f.type = "lowpass"; f.frequency.value = 900;
+      const peak = i === 0 ? 0.07 : 0.028;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + 2);
+      g.gain.setValueAtTime(peak, t + CHORD_LEN - 1.5);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + CHORD_LEN + 1.5);
+      o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + CHORD_LEN + 1.6);
+    });
+  }
+  function bell(t){
+    const m = BELLS[Math.floor(Math.random() * BELLS.length)];
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+    o.type = "sine"; o.frequency.value = mtof(m); o2.type = "sine"; o2.frequency.value = mtof(m) * 2.76; g2.gain.value = 0.25;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(master); g.connect(echo);
+    o.start(t); o2.start(t); o.stop(t + 2.3); o2.stop(t + 2.3);
+  }
+  function schedule(){
+    while (next < ctx.currentTime + 1){
+      pad(next, CHORDS[chordIdx]);
+      const n = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) bell(next + 0.8 + Math.random() * (CHORD_LEN - 1.5));
+      chordIdx = (chordIdx + 1) % CHORDS.length;
+      next += CHORD_LEN;
+    }
+  }
+  function start(){
+    if (!ctx){ if (!init()) return; wind(); }
+    if (ctx.state === "suspended") ctx.resume();
+    playing = true; next = ctx.currentTime + 0.1;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.45, ctx.currentTime + 2.5);
+    timer = setInterval(schedule, 250); schedule(); ui();
+  }
+  function stop(){
+    playing = false; clearInterval(timer);
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
+    ui();
+  }
+  function toggle(){ playing ? stop() : start(); }
+  function ui(){
+    const b = document.getElementById("musicBtn");
+    b.setAttribute("aria-pressed", playing ? "true" : "false");
+    b.querySelector(".mlabel").textContent = playing ? "Ambience on" : "Ambience off";
+    b.classList.toggle("on", playing);
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (!ctx) return;
+    if (document.hidden) ctx.suspend(); else if (playing) ctx.resume();
+  });
+  return {toggle};
+})();
+document.getElementById("musicBtn").addEventListener("click", Music.toggle);
+
+// Build eyes, tickers, sparkles
+$("heroFan").innerHTML = ["S","W","P","F","O","M"].map((k,i) => `<div class="fcard" style="--i:${i}"><span class="fnum">${ARCH[k].num}</span><span style="color:${ARCH[k].color}">${sigil(k)}</span></div>`).join("") + `<div class="fcard face"><span class="q">?</span></div>`;
+$("avatarEye").innerHTML = `<span class="mono">O</span>`;
+const words = ["What's your haunted archetype","Trust the vibes","Six archetypes","Zero data saved","Made by Olu","Happy Halloween"];
+const tick = words.map(w => `<span>${w}</span><span>✦</span>`).join("");
+$("tickerTop").innerHTML = tick + tick;
+$("tickerMid").innerHTML = tick + tick;
+
+(function(){
+  const sky = $("sky");
+  const marks = ["✦","✧","⋆","✦"];
+  for (let i=0;i<26;i++){
+    const s = document.createElement("span");
+    s.className = "spark";
+    s.textContent = marks[i % marks.length];
+    s.style.left = (Math.random()*100) + "%";
+    s.style.top = (Math.random()*100) + "%";
+    s.style.color = i % 3 === 0 ? "#ff7a1a" : "#cdb8ff";
+    s.style.fontSize = (8 + Math.random()*12) + "px";
+    s.style.animationDuration = (2.5 + Math.random()*4) + "s";
+    s.style.animationDelay = (-Math.random()*5) + "s";
+    sky.appendChild(s);
+  }
+})();
+
+$("startBtn").addEventListener("click", () => { step = 0; answers = []; renderQuestion(); show("quiz"); });
+$("backBtn").addEventListener("click", () => { if (step > 0){ step--; renderQuestion(); } });
+$("restartBtn").addEventListener("click", () => { answers = []; step = 0; show("landing"); });
+renderDeck($("deckLanding"), null);
+
+const li = $("linkedinBtn");
+if (LINKEDIN_URL) li.href = LINKEDIN_URL; else li.hidden = true;
+</script>
+</body>
+</html>
